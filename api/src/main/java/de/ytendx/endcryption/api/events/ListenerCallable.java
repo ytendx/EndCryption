@@ -1,7 +1,7 @@
 package de.ytendx.endcryption.api.events;
 
-public interface ListenerCallable<T extends Event> {
+public interface ListenerCallable {
 
-    void call(T event);
+    void call(Event event);
 
 }
