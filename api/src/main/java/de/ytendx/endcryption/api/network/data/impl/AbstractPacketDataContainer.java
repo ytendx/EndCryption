@@ -6,9 +6,9 @@ import java.util.List;
 
 public class AbstractPacketDataContainer implements IPacketDataContainer {
 
-    private List<String> packetData;
+    private List<byte[]> packetData;
 
-    public AbstractPacketDataContainer(List<String> packetData) {
+    public AbstractPacketDataContainer(List<byte[]> packetData) {
         this.packetData = packetData;
     }
 
@@ -18,12 +18,21 @@ public class AbstractPacketDataContainer implements IPacketDataContainer {
     }
 
     @Override
-    public List<String> getPacketData() {
+    public List<byte[]> getPacketData() {
         return packetData;
     }
 
     @Override
-    public void setPacketData(List<String> packetData) {
+    public void setPacketData(List<byte[]> packetData) {
         this.packetData = packetData;
+    }
+
+    @Override
+    public String serialize() {
+        StringBuilder builder = new StringBuilder();
+        for(byte[] bytes : packetData){
+            builder.append(new String(bytes));
+        }
+        return builder.toString();
     }
 }

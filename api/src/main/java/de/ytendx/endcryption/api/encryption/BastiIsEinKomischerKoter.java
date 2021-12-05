@@ -11,15 +11,16 @@ import java.util.Base64;
 public class BastiIsEinKomischerKoter{
 
     public static void main(String[] args) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-        String secretMessage = "Baeldung secret message";
+        String secretMessage = "Silas ist ein echt geiler Typ";
         System.out.println("Started! Initializing generator...");
         long current = System.currentTimeMillis();
         KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
         generator.initialize(4048);
-        System.out.println("Successfully initialized!");
         KeyPair pair = generator.generateKeyPair();
         PrivateKey privateKey = pair.getPrivate();
         PublicKey publicKey = pair.getPublic();
+        System.out.println("Successfully initialized!");
+        System.out.println("Needed " + (System.currentTimeMillis()-current) + "ms");
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(publicKey.getEncoded());
         keyFactory.generatePublic(publicKeySpec);
@@ -28,9 +29,10 @@ public class BastiIsEinKomischerKoter{
         System.out.println("Du some stuff.....");
         byte[] secretMessageBytes = secretMessage.getBytes(StandardCharsets.UTF_8);
         byte[] encryptedMessageBytes = encryptCipher.doFinal(secretMessageBytes);
+        System.out.println("Needed " + (System.currentTimeMillis()-current) + "ms");
         String encodedMessage = Base64.getEncoder().encodeToString(encryptedMessageBytes);
         Cipher decryptCipher = Cipher.getInstance("RSA");
-        decryptCipher.init(Cipher.DECRYPT_MODE, privateKey);
+        decryptCipher.init(Cipher.DECRYPT_MODE, publicKey);
         System.out.println("Uncrypted: " + secretMessage);
         System.out.println("Encrypted: " + encodedMessage);
         String s = new String(decryptCipher.doFinal(encryptedMessageBytes));

@@ -6,11 +6,9 @@ import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
 public abstract class AbstractPacket implements IPacket {
 
     private final int packetID;
-    private IPacketDataContainer dataContainer;
 
-    public AbstractPacket(final int packetID, IPacketDataContainer dataContainer){
+    public AbstractPacket(final int packetID){
         this.packetID = packetID;
-        this.dataContainer = dataContainer;
     }
 
     @Override
@@ -19,9 +17,7 @@ public abstract class AbstractPacket implements IPacket {
     }
 
     @Override
-    public IPacketDataContainer encodeUnserializedData(){
-        return this.dataContainer;
-    }
+    public abstract IPacketDataContainer encodeUnserializedData();
 
     @Override
     public abstract IPacket decodeUnserialzedData(IPacketDataContainer container);
