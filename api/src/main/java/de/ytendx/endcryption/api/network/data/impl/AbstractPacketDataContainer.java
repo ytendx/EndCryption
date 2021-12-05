@@ -30,7 +30,7 @@ public class AbstractPacketDataContainer implements IPacketDataContainer {
     @Override
     public String serialize() {
         StringBuilder builder = new StringBuilder();
-        for(byte[] bytes : packetData){
+        for (byte[] bytes : packetData) {
             builder.append(new String(bytes));
         }
         return builder.toString();

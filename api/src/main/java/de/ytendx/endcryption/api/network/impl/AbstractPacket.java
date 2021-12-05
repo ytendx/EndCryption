@@ -7,7 +7,7 @@ public abstract class AbstractPacket implements IPacket {
 
     private final int packetID;
 
-    public AbstractPacket(final int packetID){
+    public AbstractPacket(final int packetID) {
         this.packetID = packetID;
     }
 

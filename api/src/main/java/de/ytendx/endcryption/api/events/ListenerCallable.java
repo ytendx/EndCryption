@@ -1,4 +1,4 @@
-package de.ytendx.endcryption.api.network.io.events;
+package de.ytendx.endcryption.api.events;
 
 public interface ListenerCallable<T extends Event> {
 

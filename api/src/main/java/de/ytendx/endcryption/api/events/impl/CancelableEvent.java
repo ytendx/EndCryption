@@ -1,6 +1,6 @@
-package de.ytendx.endcryption.api.network.io.events.impl;
+package de.ytendx.endcryption.api.events.impl;
 
-import de.ytendx.endcryption.api.network.io.events.Event;
+import de.ytendx.endcryption.api.events.Event;
 
 public class CancelableEvent extends Event {
 

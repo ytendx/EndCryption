@@ -9,12 +9,8 @@ import java.util.function.Consumer;
 
 public class CryptionHandler {
 
-    private final KeyPair keyPair;
     private static final String CIPHER = "RSA";
-
-    public KeyPair getKeyPair() {
-        return keyPair;
-    }
+    private final KeyPair keyPair;
 
     public CryptionHandler(final int keysize, Consumer<Long> finishCall) throws NoSuchAlgorithmException {
         final long bevoreGeneration = System.currentTimeMillis();
@@ -22,6 +18,10 @@ public class CryptionHandler {
         generator.initialize((keysize == -1 ? 4048 : keysize));
         this.keyPair = generator.generateKeyPair();
         finishCall.accept(System.currentTimeMillis() - bevoreGeneration);
+    }
+
+    public KeyPair getKeyPair() {
+        return keyPair;
     }
 
     public byte[] encrypt(final byte[] content, final PublicKey targetKey) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {

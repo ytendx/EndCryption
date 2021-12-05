@@ -1,6 +1,5 @@
 package de.ytendx.endcryption.api.network.impl.def.s2c;
 
-import de.ytendx.endcryption.api.network.IPacket;
 import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
 import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
 import de.ytendx.endcryption.api.network.impl.AbstractPacket;
@@ -31,7 +30,7 @@ public class PacketS2COutHandshakeAccept extends AbstractPacket {
         return handshakeAccept;
     }
 
-    public static enum HandshakeResult{
+    public static enum HandshakeResult {
         SUCCESFULL, INVALID_NAME, INVALID_DATA, OTHER_CANCELLING;
     }
 }

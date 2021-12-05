@@ -2,7 +2,6 @@ package de.ytendx.endcryption.api.network.io.packet;
 
 import de.ytendx.endcryption.api.network.IPacket;
 
-import java.util.HashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 public class PacketRegistry {
@@ -13,26 +12,26 @@ public class PacketRegistry {
         this.packets = new CopyOnWriteArrayList<>();
     }
 
-    public void register(IPacket packet){
-        if(!packets.contains(packet))
-        packets.add(packet);
+    public void register(IPacket packet) {
+        if (!packets.contains(packet))
+            packets.add(packet);
     }
 
-    public boolean isValidPacket(IPacket packet){
-        if(!packets.contains(packet)){
-            for(IPacket packets : packets){
-                if(packets.getPacketID() == packet.getPacketID())
+    public boolean isValidPacket(IPacket packet) {
+        if (!packets.contains(packet)) {
+            for (IPacket packets : packets) {
+                if (packets.getPacketID() == packet.getPacketID())
                     return true;
             }
-        }else{
+        } else {
             return true;
         }
         return false;
     }
 
-    public IPacket getPacketByID(int packetID){
-        for(IPacket packets : packets){
-            if(packets.getPacketID() == packetID)
+    public IPacket getPacketByID(int packetID) {
+        for (IPacket packets : packets) {
+            if (packets.getPacketID() == packetID)
                 return packets;
         }
         return null;
