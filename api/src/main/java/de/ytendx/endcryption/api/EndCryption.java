@@ -1,6 +1,11 @@
 package de.ytendx.endcryption.api;
 
+import de.ytendx.endcryption.api.encryption.CryptionHandler;
+import de.ytendx.endcryption.api.network.impl.def.s2c.PacketS2COutHandshakeAccept;
+import de.ytendx.endcryption.api.network.io.ConnectionHandler;
 import de.ytendx.endcryption.api.network.io.SocketAdapter;
+
+import java.security.NoSuchAlgorithmException;
 
 public abstract class EndCryption {
 
@@ -9,7 +14,7 @@ public abstract class EndCryption {
     private String instanceName;
     private SocketAdapter adapter;
 
-    public EndCryption(String instanceName, SocketAdapter adapter) {
+    public EndCryption(String instanceName, SocketAdapter adapter) throws NoSuchAlgorithmException {
         this.instanceName = instanceName;
         this.adapter = adapter;
     }
