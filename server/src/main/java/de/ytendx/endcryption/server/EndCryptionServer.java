@@ -3,6 +3,7 @@ package de.ytendx.endcryption.server;
 import de.ytendx.endcryption.api.encryption.CryptionHandler;
 import de.ytendx.endcryption.api.events.EventHandlerPipe;
 import de.ytendx.endcryption.api.network.IPacket;
+import de.ytendx.endcryption.api.network.impl.def.PacketC2CProgrammAbort;
 import de.ytendx.endcryption.api.network.impl.def.c2s.PacketC2SOutHandshake;
 import de.ytendx.endcryption.api.network.impl.def.s2c.PacketS2COutHandshakeAccept;
 import de.ytendx.endcryption.api.network.io.ConnectionHandler;
@@ -12,6 +13,7 @@ import de.ytendx.endcryption.server.client.ClientRegister;
 import de.ytendx.endcryption.server.io.PacketHandler;
 import de.ytendx.endcryption.server.io.SerializeHandler;
 import de.ytendx.endcryption.server.packet.PacketC2CMessage;
+import de.ytendx.endcryption.server.packet.PacketS2CMessageAbort;
 import lombok.Getter;
 import lombok.SneakyThrows;
 
@@ -68,6 +70,8 @@ public class EndCryptionServer {
         registry.register(new PacketC2SOutHandshake(1));
         registry.register(new PacketS2COutHandshakeAccept(2));
         registry.register(new PacketC2CMessage(3));
+        registry.register(new PacketS2CMessageAbort(4));
+        registry.register(new PacketC2CProgrammAbort(5));
     }
 
     @SneakyThrows
