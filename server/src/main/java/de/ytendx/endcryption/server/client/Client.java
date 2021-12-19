@@ -18,8 +18,8 @@ public class Client {
     }
 
     public Client(PublicKey publicKey, EndCryption clientEC) {
-        this.publicKey = publicKey;
         this.clientEC = clientEC;
+        this.publicKey = publicKey;
     }
 
 }

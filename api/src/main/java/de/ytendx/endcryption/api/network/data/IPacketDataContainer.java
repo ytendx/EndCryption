@@ -12,4 +12,6 @@ public interface IPacketDataContainer {
 
     String serialize();
 
+    int getPacketID();
+
 }

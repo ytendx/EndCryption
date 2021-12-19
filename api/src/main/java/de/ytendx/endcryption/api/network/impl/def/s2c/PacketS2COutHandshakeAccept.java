@@ -3,7 +3,9 @@ package de.ytendx.endcryption.api.network.impl.def.s2c;
 import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
 import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
 import de.ytendx.endcryption.api.network.impl.AbstractPacket;
+import lombok.Getter;
 
+@Getter
 public class PacketS2COutHandshakeAccept extends AbstractPacket {
 
     private HandshakeResult result;
@@ -19,7 +21,7 @@ public class PacketS2COutHandshakeAccept extends AbstractPacket {
 
     @Override
     public IPacketDataContainer encodeUnserializedData() {
-        IPacketDataContainer dataContainer = new EmptyDataContainer();
+        IPacketDataContainer dataContainer = new EmptyDataContainer(this.getPacketID());
         dataContainer.getPacketData().add(result.toString().getBytes());
         return dataContainer;
     }

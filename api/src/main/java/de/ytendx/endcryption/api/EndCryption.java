@@ -4,9 +4,11 @@ import de.ytendx.endcryption.api.encryption.CryptionHandler;
 import de.ytendx.endcryption.api.network.impl.def.s2c.PacketS2COutHandshakeAccept;
 import de.ytendx.endcryption.api.network.io.ConnectionHandler;
 import de.ytendx.endcryption.api.network.io.SocketAdapter;
+import lombok.Getter;
 
 import java.security.NoSuchAlgorithmException;
 
+@Getter
 public abstract class EndCryption {
 
     public static final String PACKET_DATA_SPLITTER = "//-packetsplit_endcryption-//";

@@ -34,4 +34,16 @@ public class ClientRegister {
         this.eventHandlerPipe.call(new ClientUnregisterEvent(client));
     }
 
+    public boolean containsClient(String name){
+        for (Client client : clients){
+            if(client.getClientEC().getInstanceName().equals(name)) return true;
+        }
+        return false;
+    }
+
+    public Client getByName(String name){
+        for(Client client : clients) if(client.getClientEC().getInstanceName().equals(name)) return client;
+        return null;
+    }
+
 }

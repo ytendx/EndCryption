@@ -1,9 +1,11 @@
 package de.ytendx.endcryption.api.network.io.packet;
 
 import de.ytendx.endcryption.api.network.IPacket;
+import lombok.Getter;
 
 import java.util.concurrent.CopyOnWriteArrayList;
 
+@Getter
 public class PacketRegistry {
 
     private CopyOnWriteArrayList<IPacket> packets;
@@ -35,5 +37,11 @@ public class PacketRegistry {
                 return packets;
         }
         return null;
+    }
+
+    public int getPacketIDByClazz(Class<? extends IPacket> packetClazz){
+        for(IPacket packet : packets)
+            if(packet.getClass().isInstance(packetClazz)) return packet.getPacketID();
+        throw new NullPointerException("No packet found");
     }
 }

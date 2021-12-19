@@ -7,9 +7,11 @@ import java.util.List;
 public class AbstractPacketDataContainer implements IPacketDataContainer {
 
     private List<byte[]> packetData;
+    private int packetID;
 
-    public AbstractPacketDataContainer(List<byte[]> packetData) {
+    public AbstractPacketDataContainer(int packetID, List<byte[]> packetData) {
         this.packetData = packetData;
+        this.packetID = packetID;
     }
 
     @Override
@@ -33,6 +35,11 @@ public class AbstractPacketDataContainer implements IPacketDataContainer {
         for (byte[] bytes : packetData) {
             builder.append(new String(bytes));
         }
-        return builder.toString();
+        return builder.toString(); // TODO Recode to GsonBuilder
+    }
+
+    @Override
+    public int getPacketID() {
+        return packetID;
     }
 }

@@ -84,7 +84,7 @@ public class ConnectionHandler {
 
     public boolean handleDecryption(IPacketDataContainer dataContainer, Consumer<IPacketDataContainer> dataContainerConsumer) {
         try {
-            IPacketDataContainer decryptedContainer = new EmptyDataContainer();
+            IPacketDataContainer decryptedContainer = new EmptyDataContainer(dataContainer.getPacketID());
             for (byte[] array : dataContainer.getPacketData()) {
                 decryptedContainer.getPacketData().add(this.cryptionHandler.decrypt(array));
             }
@@ -122,7 +122,7 @@ public class ConnectionHandler {
                             return;
                         }
 
-                        IPacketDataContainer dataContainer = new EmptyDataContainer();
+                        IPacketDataContainer dataContainer = new EmptyDataContainer(0);
                         for (String packetData : content.split(EndCryption.PACKET_DATA_SPLITTER)) {
                             dataContainer.getPacketData().add(packetData.getBytes());
                         }
