@@ -22,7 +22,7 @@ public class SerializeHandler implements IByteHandler {
         if(dataContainer.getPacketID() < 1 || dataContainer.getPacketID() > server.getPacketRegistry().getPackets().size()){
             return null;
         }
-        IPacket packet = server.getPacketRegistry().getPacketByID(dataContainer.getPacketID());
-        return packet;
+        IPacket packetClass = server.getPacketRegistry().getPacketByID(dataContainer.getPacketID());
+        return packetClass.decodeUnserialzedData(dataContainer);
     }
 }

@@ -30,15 +30,27 @@ public class PacketC2SOutHandshake extends AbstractPacket {
 
     @Override
     public IPacketDataContainer encodeUnserializedData() {
-        IPacketDataContainer iPacketDataContainer = new EmptyDataContainer(this.getPacketID());
-        iPacketDataContainer.setPacketData(Arrays.asList(publicKey.getBytes(), ip.getBytes(), String.valueOf(port).getBytes(), name.getBytes()));
+        IPacketDataContainer iPacketDataContainer =
+                new EmptyDataContainer(
+                        this.getPacketID());
+        System.out.println("IP: " + ip);
+        System.out.println("Port: " + port);
+        System.out.println("Name: " + name);
+        System.out.println("PBC: " + publicKey);
+        iPacketDataContainer
+                .setPacketData(
+                Arrays.asList(
+                publicKey.getBytes(),
+                ip.getBytes(),
+                String.valueOf(port).getBytes(),
+                name.getBytes()));
         return iPacketDataContainer;
     }
 
     @Override
     public PacketC2SOutHandshake decodeUnserialzedData(IPacketDataContainer container) {
         PacketC2SOutHandshake handshake = new PacketC2SOutHandshake(getPacketID(),
-                new String(container.getPacketData().get(3)), new String(container.getPacketData().get(1)), Integer.valueOf(new String(container.getPacketData().get(2))), new String(container.getPacketData().get(0)));
+                new String(container.getPacketData().get(0)), new String(container.getPacketData().get(1)), Integer.valueOf(new String(container.getPacketData().get(2))), new String(container.getPacketData().get(3)));
         return handshake;
     }
 }

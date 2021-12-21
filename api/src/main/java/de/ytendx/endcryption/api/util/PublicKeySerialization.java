@@ -2,6 +2,7 @@ package de.ytendx.endcryption.api.util;
 
 import de.ytendx.endcryption.api.encryption.CryptionHandler;
 
+import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
@@ -16,8 +17,20 @@ import java.util.Base64;
 public class PublicKeySerialization {
 
     public static PublicKey fromString(String publicKey) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeySpecException {
-        byte[] encoded = Base64.getDecoder().decode(publicKey);
 
+        if(publicKey == null) {
+            System.out.println("[API] Excpetion would occur cause the givven encoded PublicKey as DATATYPE: String"
+            + " is null. NulPointerException prevented! Returning null value!");
+            return null;
+        }
+
+        System.out.println("Key: " + publicKey);
+
+        byte[] encoded
+                = Base64.getDecoder()
+                .decode(publicKey.getBytes(StandardCharsets.UTF_8));
+
+        //KeyFactory keyFactory = KeyFactory.getInstance("DSA", "SUN");
         X509EncodedKeySpec keySpec = new X509EncodedKeySpec(encoded);
         KeyFactory keyFactory = KeyFactory.getInstance("RSA");
         return keyFactory.generatePublic(keySpec);

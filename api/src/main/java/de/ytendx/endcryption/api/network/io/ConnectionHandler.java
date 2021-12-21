@@ -150,10 +150,16 @@ public class ConnectionHandler {
                             continue;
                         }
 
+                        System.out.println("PacketID1: " + packetID);
+                        System.out.println("Content1: " + content);
+
                         IPacketDataContainer dataContainer = new EmptyDataContainer(packetID);
                         for (String packetData : content.split(EndCryption.PACKET_DATA_SPLITTER)) {
                             dataContainer.getPacketData().add(packetData.getBytes());
                         }
+
+                        System.out.println("PacketID2: " + dataContainer.getPacketID());
+                        System.out.println("Content2: " + dataContainer.serialize());
 
                         IPacket packet = byteHandler.handle(socketAdapter, dataContainer);
 
@@ -164,6 +170,9 @@ public class ConnectionHandler {
                             addressAlreadyInUse.set(false);
                             continue;
                         }
+
+                        System.out.println("PacketID3: " + packet.getPacketID());
+                        System.out.println("Content3: " + packet.encodeUnserializedData().serialize());
 
                         if (packetHandler != null) {
                             // PACKET HANDLING
