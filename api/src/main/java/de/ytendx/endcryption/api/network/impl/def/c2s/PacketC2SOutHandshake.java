@@ -21,6 +21,7 @@ public class PacketC2SOutHandshake extends AbstractPacket {
         this.ip = ip;
         this.port = localPort;
         this.name = name;
+        this.publicKey = ownPublicKey;
     }
 
     public PacketC2SOutHandshake(int packetID) {

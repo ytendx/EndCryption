@@ -1,5 +1,6 @@
 package de.ytendx.endcryption.api.network.data.impl;
 
+import de.ytendx.endcryption.api.EndCryption;
 import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
 
 import java.util.List;
@@ -33,7 +34,7 @@ public class AbstractPacketDataContainer implements IPacketDataContainer {
     public String serialize() {
         StringBuilder builder = new StringBuilder();
         for (byte[] bytes : packetData) {
-            builder.append(new String(bytes));
+            builder.append(new String(bytes) + EndCryption.PACKET_DATA_SPLITTER);
         }
         return builder.toString(); // TODO Recode to GsonBuilder
     }

@@ -12,7 +12,7 @@ public class CryptionHandler {
     /**
      * Used Cipher instance saved in String format
      */
-    private static final String CIPHER = "RSA";
+    public static final String CIPHER = "RSA";
 
     /**
      * The final keyPair wich is used for decryption in CryptionHandler#decrypt

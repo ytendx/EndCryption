@@ -2,6 +2,7 @@ package de.ytendx.endcryption.client;
 
 import de.ytendx.endcryption.api.encryption.CryptionHandler;
 import de.ytendx.endcryption.api.events.EventHandlerPipe;
+import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
 import de.ytendx.endcryption.api.network.impl.def.PacketC2CProgrammAbort;
 import de.ytendx.endcryption.api.network.impl.def.c2s.PacketC2SOutHandshake;
 import de.ytendx.endcryption.api.network.impl.def.s2c.PacketS2COutHandshakeAccept;

@@ -14,9 +14,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 public class ConnectionHandler {
@@ -61,6 +62,7 @@ public class ConnectionHandler {
     public boolean sendPacketData(SocketAdapter adapter, IPacketDataContainer dataContainer) throws IOException {
         final Socket socket = new Socket(adapter.getIp(), adapter.getPort());
         final PrintWriter writer = new PrintWriter(socket.getOutputStream());
+        writer.write(dataContainer.getPacketID());
         writer.write(dataContainer.serialize());
         writer.flush();
         socket.close();
@@ -99,53 +101,85 @@ public class ConnectionHandler {
     public ConnectionHandler startDownstreamThreads(int maxThreads) {
         for (int currentThreads = 0; currentThreads < maxThreads; currentThreads++) {
             new Thread(() -> {
+
+                AtomicBoolean addressAlreadyInUse = new AtomicBoolean(false);
+
                 while (true) {
+
+                    if(addressAlreadyInUse.get()) continue;
+
+                    ServerSocket serverSocket = null;
+                    Socket socket = null;
+
                     try {
-                        final ServerSocket serverSocket = new ServerSocket(localData.getPort());
-                        final Socket socket = serverSocket.accept();
+                        serverSocket = new ServerSocket(localData.getPort());
+                        socket = serverSocket.accept();
                         final InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
                         final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
+                        socket.setSoTimeout(500);
+
+                        addressAlreadyInUse.set(true);
+
+                        int packetID = bufferedReader.read();
                         String content = bufferedReader.readLine();
-                        InetAddress address = ((InetSocketAddress) socket.getChannel().getRemoteAddress()).getAddress();
+                        InetAddress address = socket.getInetAddress();
                         SocketAdapter socketAdapter = new SocketAdapter(address.getHostAddress(), socket.getPort());
 
-                        if (!content.contains(EndCryption.PACKET_DATA_SPLITTER)) {
+                        if(content == null) {
                             if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
                             socket.close();
-                            return;
+                            serverSocket.close();
+                            addressAlreadyInUse.set(false);
+                            continue;
                         }
 
-                        if (!connectionHandler.handle(socketAdapter, content)) {
+                        if (!content.contains(EndCryption.PACKET_DATA_SPLITTER) || packetID == 0 || content.isEmpty()) {
                             if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
                             socket.close();
-                            return;
+                            serverSocket.close();
+                            addressAlreadyInUse.set(false);
+                            continue;
                         }
 
-                        IPacketDataContainer dataContainer = new EmptyDataContainer(0);
+                        if (connectionHandler != null && !connectionHandler.handle(socketAdapter, content)) {
+                            if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
+                            socket.close();
+                            serverSocket.close();
+                            addressAlreadyInUse.set(false);
+                            continue;
+                        }
+
+                        IPacketDataContainer dataContainer = new EmptyDataContainer(packetID);
                         for (String packetData : content.split(EndCryption.PACKET_DATA_SPLITTER)) {
                             dataContainer.getPacketData().add(packetData.getBytes());
                         }
 
-                        handleDecryption(dataContainer, dataContainer1 -> {
-                            IPacket packet = byteHandler.handle(socketAdapter, dataContainer1);
+                        IPacket packet = byteHandler.handle(socketAdapter, dataContainer);
 
-                            if (packet == null) {
-                                if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
-                                try {
-                                    socket.close();
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                return;
-                            }
+                        if (packet == null) {
+                            if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
+                            socket.close();
+                            serverSocket.close();
+                            addressAlreadyInUse.set(false);
+                            continue;
+                        }
 
-                            if (packetHandler != null) {
-                                // PACKET HANDLING
-                                packetHandler.handle(socketAdapter, packet);
-                            }
-                        });
-                    } catch (IOException e) {
+                        if (packetHandler != null) {
+                            // PACKET HANDLING
+                            packetHandler.handle(socketAdapter, packet);
+                        }
+
+                        addressAlreadyInUse.set(false);
+                        socket.close();
+                        serverSocket.close();
+                    } catch (Exception e) {
+                        addressAlreadyInUse.set(false);
+                        try {
+                            socket.close();
+                            serverSocket.close();
+                        } catch (Exception ex) {System.out.println("[API] Error occured while trying to handle error!");}
+                        System.out.println("[API] Exeption occured while trying to resolve packets. (TYPE: " + e.getClass().getSimpleName() + " MSG:" + e.getMessage() + ")");
                         e.printStackTrace();
                     }
                 }
