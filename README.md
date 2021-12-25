@@ -1,6 +1,6 @@
 # EndCryption
 
-**EndCryption is used for Anonymous Hosting dependent privacy data connections.**
+**EndCryption is used for Anonymous Hosting dependent privacy data connections. It is not finished yet. Work in progress!**
 
 _________________
 
