@@ -1,9 +1,13 @@
 package de.ytendx.endcryption.api.network.impl.def.s2c;
 
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
-import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
+import de.ytendx.endcryption.api.network.data.PacketDataContainer;
 import de.ytendx.endcryption.api.network.impl.AbstractPacket;
 import lombok.Getter;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Arrays;
 
 @Getter
 public class PacketS2COutHandshakeAccept extends AbstractPacket {
@@ -20,16 +24,15 @@ public class PacketS2COutHandshakeAccept extends AbstractPacket {
     }
 
     @Override
-    public IPacketDataContainer encodeUnserializedData() {
-        IPacketDataContainer dataContainer = new EmptyDataContainer(this.getPacketID());
-        dataContainer.getPacketData().add(result.toString().getBytes());
-        return dataContainer;
+    public PacketS2COutHandshakeAccept read(DataInputStream stream) throws IOException {
+        result = HandshakeResult.valueOf(stream.readUTF());
+        return this;
     }
 
     @Override
-    public PacketS2COutHandshakeAccept decodeUnserialzedData(IPacketDataContainer container) {
-        PacketS2COutHandshakeAccept handshakeAccept = new PacketS2COutHandshakeAccept(getPacketID(), HandshakeResult.valueOf(new String(container.getPacketData().get(0))));
-        return handshakeAccept;
+    public PacketDataContainer write(DataOutputStream stream) throws IOException {
+        stream.writeUTF(result.toString());
+        return new PacketDataContainer(this.getPacketID(), null, Arrays.asList(result));
     }
 
     public static enum HandshakeResult {

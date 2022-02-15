@@ -1,7 +1,6 @@
 package de.ytendx.endcryption.client.io;
 
 import de.ytendx.endcryption.api.network.IPacket;
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
 import de.ytendx.endcryption.api.network.io.SocketAdapter;
 import de.ytendx.endcryption.api.network.io.handler.IByteHandler;
 import de.ytendx.endcryption.client.EndCryptionClient;

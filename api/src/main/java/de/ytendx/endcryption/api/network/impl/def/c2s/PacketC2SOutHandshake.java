@@ -1,12 +1,12 @@
 package de.ytendx.endcryption.api.network.impl.def.c2s;
 
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
-import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
+import de.ytendx.endcryption.api.network.data.PacketDataContainer;
 import de.ytendx.endcryption.api.network.impl.AbstractPacket;
 import lombok.Getter;
 
-import java.security.PublicKey;
-import java.util.Arrays;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 @Getter
 public class PacketC2SOutHandshake extends AbstractPacket {
@@ -29,28 +29,23 @@ public class PacketC2SOutHandshake extends AbstractPacket {
     }
 
     @Override
-    public IPacketDataContainer encodeUnserializedData() {
-        IPacketDataContainer iPacketDataContainer =
-                new EmptyDataContainer(
-                        this.getPacketID());
-        System.out.println("IP: " + ip);
-        System.out.println("Port: " + port);
-        System.out.println("Name: " + name);
-        System.out.println("PBC: " + publicKey);
-        iPacketDataContainer
-                .setPacketData(
-                Arrays.asList(
-                publicKey.getBytes(),
-                ip.getBytes(),
-                String.valueOf(port).getBytes(),
-                name.getBytes()));
-        return iPacketDataContainer;
+    public PacketC2SOutHandshake read(DataInputStream stream) throws IOException {
+        publicKey = stream.readUTF();
+        name = stream.readUTF();
+        port = stream.readInt();
+        name = stream.readUTF();
+        ip = stream.readUTF();
+        return this;
     }
 
     @Override
-    public PacketC2SOutHandshake decodeUnserialzedData(IPacketDataContainer container) {
-        PacketC2SOutHandshake handshake = new PacketC2SOutHandshake(getPacketID(),
-                new String(container.getPacketData().get(0)), new String(container.getPacketData().get(1)), Integer.valueOf(new String(container.getPacketData().get(2))), new String(container.getPacketData().get(3)));
-        return handshake;
+    public PacketDataContainer write(DataOutputStream stream) throws IOException {
+        stream.writeUTF(publicKey);
+        stream.writeUTF(name);
+        stream.writeInt(port);
+        stream.writeUTF(name);
+        stream.writeUTF(ip);
+        return null;
     }
+
 }

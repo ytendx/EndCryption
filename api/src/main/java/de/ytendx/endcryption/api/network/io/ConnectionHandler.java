@@ -1,22 +1,18 @@
 package de.ytendx.endcryption.api.network.io;
 
-import de.ytendx.endcryption.api.EndCryption;
 import de.ytendx.endcryption.api.encryption.CryptionHandler;
 import de.ytendx.endcryption.api.network.IPacket;
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
+import de.ytendx.endcryption.api.network.data.PacketDataContainer;
 import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
 import de.ytendx.endcryption.api.network.io.handler.IByteHandler;
 import de.ytendx.endcryption.api.network.io.handler.IConnectionHandler;
 import de.ytendx.endcryption.api.network.io.handler.IPacketHandler;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
@@ -59,12 +55,13 @@ public class ConnectionHandler {
         return invalidPacketHandler;
     }
 
-    public boolean sendPacketData(SocketAdapter adapter, IPacketDataContainer dataContainer) throws IOException {
+    public boolean sendPacketData(SocketAdapter adapter, IPacket data) throws IOException {
         final Socket socket = new Socket(adapter.getIp(), adapter.getPort());
-        final PrintWriter writer = new PrintWriter(socket.getOutputStream());
-        writer.write(dataContainer.getPacketID());
-        writer.write(dataContainer.serialize());
-        writer.flush();
+        DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
+        outputStream.write(data.getPacketID());
+        data.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
         socket.close();
         return true;
     }
@@ -84,13 +81,9 @@ public class ConnectionHandler {
         return this;
     }
 
-    public boolean handleDecryption(IPacketDataContainer dataContainer, Consumer<IPacketDataContainer> dataContainerConsumer) {
+    public boolean handleDecryption(byte[] bytes, Consumer<byte[]> dataContainerConsumer) {
         try {
-            IPacketDataContainer decryptedContainer = new EmptyDataContainer(dataContainer.getPacketID());
-            for (byte[] array : dataContainer.getPacketData()) {
-                decryptedContainer.getPacketData().add(this.cryptionHandler.decrypt(array));
-            }
-            dataContainerConsumer.accept(decryptedContainer);
+            dataContainerConsumer.accept(cryptionHandler.decrypt(bytes));
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -114,65 +107,34 @@ public class ConnectionHandler {
                     try {
                         serverSocket = new ServerSocket(localData.getPort());
                         socket = serverSocket.accept();
-                        final InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
-                        final BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-
                         socket.setSoTimeout(500);
-
                         addressAlreadyInUse.set(true);
 
-                        int packetID = bufferedReader.read();
-                        String content = bufferedReader.readLine();
                         InetAddress address = socket.getInetAddress();
                         SocketAdapter socketAdapter = new SocketAdapter(address.getHostAddress(), socket.getPort());
 
-                        if(content == null) {
-                            if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
+                        DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+
+                        // Check for connection Handler acceptage (TODO: Firewall Implementation)
+                        if(connectionHandler.handle(socketAdapter, inputStream)){
                             socket.close();
                             serverSocket.close();
-                            addressAlreadyInUse.set(false);
-                            continue;
+                            invalidPacketHandler.accept(socketAdapter);
+                            return;
                         }
 
-                        if (!content.contains(EndCryption.PACKET_DATA_SPLITTER) || packetID == 0 || content.isEmpty()) {
-                            if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
-                            socket.close();
-                            serverSocket.close();
-                            addressAlreadyInUse.set(false);
-                            continue;
-                        }
+                        int packetID = inputStream.read();
+                        PacketDataContainer dataContainer = new PacketDataContainer(packetID, socket, new CopyOnWriteArrayList<>());
 
-                        if (connectionHandler != null && !connectionHandler.handle(socketAdapter, content)) {
-                            if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
-                            socket.close();
-                            serverSocket.close();
-                            addressAlreadyInUse.set(false);
-                            continue;
-                        }
-
-                        System.out.println("PacketID1: " + packetID);
-                        System.out.println("Content1: " + content);
-
-                        IPacketDataContainer dataContainer = new EmptyDataContainer(packetID);
-                        for (String packetData : content.split(EndCryption.PACKET_DATA_SPLITTER)) {
-                            dataContainer.getPacketData().add(packetData.getBytes());
-                        }
-
-                        System.out.println("PacketID2: " + dataContainer.getPacketID());
-                        System.out.println("Content2: " + dataContainer.serialize());
 
                         IPacket packet = byteHandler.handle(socketAdapter, dataContainer);
 
-                        if (packet == null) {
-                            if (invalidPacketHandler != null) invalidPacketHandler.accept(socketAdapter);
+                        if(packet == null){
                             socket.close();
                             serverSocket.close();
-                            addressAlreadyInUse.set(false);
-                            continue;
+                            invalidPacketHandler.accept(socketAdapter);
+                            return;
                         }
-
-                        System.out.println("PacketID3: " + packet.getPacketID());
-                        System.out.println("Content3: " + packet.encodeUnserializedData().serialize());
 
                         if (packetHandler != null) {
                             // PACKET HANDLING

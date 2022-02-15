@@ -1,9 +1,11 @@
 package de.ytendx.endcryption.server.packet;
 
-import de.ytendx.endcryption.api.network.IPacket;
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
-import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
+import de.ytendx.endcryption.api.network.data.PacketDataContainer;
 import de.ytendx.endcryption.api.network.impl.AbstractPacket;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class PacketS2CMessageAbort extends AbstractPacket {
 
@@ -12,12 +14,13 @@ public class PacketS2CMessageAbort extends AbstractPacket {
     }
 
     @Override
-    public IPacketDataContainer encodeUnserializedData() {
-        return new EmptyDataContainer(getPacketID());
+    public PacketS2CMessageAbort read(DataInputStream stream) throws IOException {
+        return this;
     }
 
     @Override
-    public IPacket decodeUnserialzedData(IPacketDataContainer container) {
-        return new PacketS2CMessageAbort(container.getPacketID());
+    public PacketDataContainer write(DataOutputStream stream) throws IOException {
+        return null;
     }
+
 }

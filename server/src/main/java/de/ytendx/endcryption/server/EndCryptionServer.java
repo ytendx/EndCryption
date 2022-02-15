@@ -76,7 +76,7 @@ public class EndCryptionServer {
 
     @SneakyThrows
     public void sendPacket(SocketAdapter socketAdapter, IPacket packet){
-        connectionHandler.sendPacketData(socketAdapter, packet.encodeUnserializedData());
+        connectionHandler.sendPacketData(socketAdapter, packet);
     }
 
 }

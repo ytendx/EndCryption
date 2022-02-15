@@ -1,7 +1,6 @@
 package de.ytendx.endcryption.client.packets;
 
 import de.ytendx.endcryption.api.network.IPacket;
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
 import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
 import de.ytendx.endcryption.api.network.impl.AbstractPacket;
 import lombok.Getter;

@@ -1,7 +1,11 @@
 package de.ytendx.endcryption.api.network.impl;
 
 import de.ytendx.endcryption.api.network.IPacket;
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
+import de.ytendx.endcryption.api.network.data.PacketDataContainer;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public abstract class AbstractPacket implements IPacket {
 
@@ -17,8 +21,7 @@ public abstract class AbstractPacket implements IPacket {
     }
 
     @Override
-    public abstract IPacketDataContainer encodeUnserializedData();
-
+    public abstract AbstractPacket read(DataInputStream stream) throws IOException;
     @Override
-    public abstract IPacket decodeUnserialzedData(IPacketDataContainer container);
+    public abstract PacketDataContainer write(DataOutputStream stream) throws IOException;
 }

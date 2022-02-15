@@ -20,7 +20,7 @@ public class PublicKeySerialization {
 
         if(publicKey == null) {
             System.out.println("[API] Excpetion would occur cause the givven encoded PublicKey as DATATYPE: String"
-            + " is null. NulPointerException prevented! Returning null value!");
+            + " is null. NulPointerException prevented, Returning null value!");
             return null;
         }
 

@@ -1,10 +1,12 @@
 package de.ytendx.endcryption.server.packet;
 
-import de.ytendx.endcryption.api.network.IPacket;
-import de.ytendx.endcryption.api.network.data.IPacketDataContainer;
-import de.ytendx.endcryption.api.network.data.impl.EmptyDataContainer;
+import de.ytendx.endcryption.api.network.data.PacketDataContainer;
 import de.ytendx.endcryption.api.network.impl.AbstractPacket;
 import lombok.Getter;
+
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 @Getter
 public class PacketC2CMessage extends AbstractPacket {
@@ -16,22 +18,24 @@ public class PacketC2CMessage extends AbstractPacket {
         super(packetID);
     }
 
+    @Override
+    public PacketC2CMessage read(DataInputStream stream) throws IOException {
+        message = stream.readUTF();
+        destination = stream.readUTF();
+        return this;
+    }
+
+    @Override
+    public PacketDataContainer write(DataOutputStream stream) throws IOException {
+        stream.writeUTF(message);
+        stream.writeUTF(destination);
+        return null;
+    }
+
     public PacketC2CMessage(int packetID, String message, String destination) {
         super(packetID);
         this.message = message;
         this.destination = destination;
     }
 
-    @Override
-    public IPacketDataContainer encodeUnserializedData() {
-        IPacketDataContainer dataContainer = new EmptyDataContainer(getPacketID());
-        dataContainer.getPacketData().add(message.getBytes());
-        dataContainer.getPacketData().add(destination.getBytes());
-        return dataContainer;
-    }
-
-    @Override
-    public IPacket decodeUnserialzedData(IPacketDataContainer container) {
-        return new PacketC2CMessage(container.getPacketID(), new String(container.getPacketData().get(0)), new String(container.getPacketData().get(1)));
-    }
 }
