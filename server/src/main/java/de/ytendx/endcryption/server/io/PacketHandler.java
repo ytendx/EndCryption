@@ -10,9 +10,13 @@ import de.ytendx.endcryption.server.EndCryptionServer;
 import de.ytendx.endcryption.server.client.Client;
 import de.ytendx.endcryption.server.client.ServerEndCryption;
 import de.ytendx.endcryption.server.packet.PacketC2CMessage;
+import de.ytendx.endcryption.server.packet.PacketC2SPublicKeyRequest;
 import de.ytendx.endcryption.server.packet.PacketS2CMessageAbort;
+import de.ytendx.endcryption.server.packet.PacketS2CPublicKeyResponse;
 import lombok.AllArgsConstructor;
 import lombok.SneakyThrows;
+
+import java.security.PublicKey;
 
 @AllArgsConstructor
 public class PacketHandler implements IPacketHandler {
@@ -27,6 +31,8 @@ public class PacketHandler implements IPacketHandler {
             System.out.println(EndCryptionServer.CMD_PREFIX + "The client " + adapter.getIp() + " tryed to sent an packet wich isn´t in the register.");
             return false;
         }
+
+        System.out.println(EndCryptionServer.CMD_PREFIX + adapter.getIp() + ":" + adapter.getPort() + " -> Received packet of type " + packet.getClass().getSimpleName());
 
         if(packet instanceof PacketC2SOutHandshake){
 
@@ -73,6 +79,30 @@ public class PacketHandler implements IPacketHandler {
                     new PacketC2CMessage(server.getPacketRegistry().getPacketIDByClazz(PacketC2CMessage.class), packetC2CMessage.getMessage(), client.getClientEC().getInstanceName()));
 
             System.out.println(EndCryptionServer.CMD_PREFIX + "The client " + adapter.getIp() + " sent an message to " + client.getClientEC().getAdapter().getIp() + " succesfully");
+
+        }
+
+        if(packet instanceof PacketC2SPublicKeyRequest){
+
+            PacketC2SPublicKeyRequest packetC2SPublicKeyRequest = (PacketC2SPublicKeyRequest) packet;
+            Client client = server.getClientRegister().getByName(packetC2SPublicKeyRequest.getDestination());
+
+            if(client == null){
+                System.out.println(EndCryptionServer.CMD_PREFIX + "The client " + adapter.getIp() + " requested a key of an null client");
+
+                server.sendPacket(adapter, new PacketS2CPublicKeyResponse(server.getPacketRegistry().getPacketIDByClazz(PacketS2CPublicKeyResponse.class),
+                        PacketS2CPublicKeyResponse.ResponseType.NOT_REGISTERED_DESTINATION,
+                        null, packetC2SPublicKeyRequest.getDestination()));
+
+                return false;
+            }
+
+            server.sendPacket(adapter, new PacketS2CPublicKeyResponse(server.getPacketRegistry().getPacketIDByClazz(PacketS2CPublicKeyResponse.class),
+                    PacketS2CPublicKeyResponse.ResponseType.SUCCESS,
+                    client.getPublicKey(),
+                    packetC2SPublicKeyRequest.getDestination()));
+
+            System.out.println(EndCryptionServer.CMD_PREFIX + "The client " + adapter.getIp() + " requested a key of client '" + packetC2SPublicKeyRequest.getDestination() + "' with success");
 
         }
 

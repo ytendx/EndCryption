@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.ytendx.endcryption.ui.LoginController">
+   <children>
+      <TextField fx:id="serverAdress" layoutX="225.0" layoutY="200.0" promptText="Server-Adress" />
+      <TextField fx:id="preferedUsername" layoutX="225.0" layoutY="230.0" promptText="Prefered Username" />
+      <Hyperlink layoutY="380.0" text="Need Help?" />
+      <Button fx:id="loginButton" layoutX="225.0" layoutY="260.0" mnemonicParsing="false" text="Login" />
+      <Label layoutX="260.0" layoutY="180.0" text="EndCryption 2021/22">
+         <font>
+            <Font size="8.0" />
+         </font></Label>
+      <Label layoutX="200.0" layoutY="100.0" text="LOGIN">
+         <font>
+            <Font size="72.0" />
+         </font>
+      </Label>
+   </children>
+</AnchorPane>

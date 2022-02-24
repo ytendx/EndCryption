@@ -1,6 +1,5 @@
 package de.ytendx.endcryption.server.io;
 
-import com.sun.imageio.plugins.common.InputStreamAdapter;
 import de.ytendx.endcryption.api.network.io.SocketAdapter;
 import de.ytendx.endcryption.api.network.io.handler.IConnectionHandler;
 

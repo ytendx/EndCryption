@@ -7,7 +7,10 @@ import de.ytendx.endcryption.api.network.io.SocketAdapter;
 import de.ytendx.endcryption.api.network.io.handler.IPacketHandler;
 import de.ytendx.endcryption.client.EndCryptionClient;
 import de.ytendx.endcryption.client.packets.PacketC2CMessage;
+import de.ytendx.endcryption.client.packets.PacketS2CPublicKeyResponse;
 import lombok.AllArgsConstructor;
+
+import javax.swing.*;
 
 @AllArgsConstructor
 public class PacketHandler implements IPacketHandler {
@@ -52,6 +55,20 @@ public class PacketHandler implements IPacketHandler {
             }
 
             System.out.println("Received Message: " + packetC2CMessage.getMessage());
+
+        }
+
+        if(packet instanceof PacketS2CPublicKeyResponse){
+
+            PacketS2CPublicKeyResponse response = (PacketS2CPublicKeyResponse) packet;
+
+            if(response.getResponseType().equals(PacketS2CPublicKeyResponse.ResponseType.SUCCESS)){
+
+
+
+            }else{
+                JOptionPane.showMessageDialog(null, "The client is not registered!", "Server", JOptionPane.ERROR_MESSAGE);
+            }
 
         }
 

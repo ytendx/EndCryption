@@ -24,8 +24,6 @@ public class PublicKeySerialization {
             return null;
         }
 
-        System.out.println("Key: " + publicKey);
-
         byte[] encoded
                 = Base64.getDecoder()
                 .decode(publicKey.getBytes(StandardCharsets.UTF_8));

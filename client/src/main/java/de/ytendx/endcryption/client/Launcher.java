@@ -13,7 +13,8 @@ public class Launcher {
             return;
         }*/
 
-        new EndCryptionClient("Schwurblibub", new SocketAdapter("45.142.114.77", 4000));
+        new EndCryptionClient("Schwurblibub", new SocketAdapter("185.248.140.51", 4000));
+        System.out.println(0x0A + " | " + 0x0B);
     }
 
 }

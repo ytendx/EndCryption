@@ -97,61 +97,58 @@ public class ConnectionHandler {
 
                 AtomicBoolean addressAlreadyInUse = new AtomicBoolean(false);
 
+                ServerSocket serverSocket = null;
+
                 while (true) {
+                    if(!addressAlreadyInUse.get()){
+                        Socket socket = null;
 
-                    if(addressAlreadyInUse.get()) continue;
-
-                    ServerSocket serverSocket = null;
-                    Socket socket = null;
-
-                    try {
-                        serverSocket = new ServerSocket(localData.getPort());
-                        socket = serverSocket.accept();
-                        socket.setSoTimeout(500);
-                        addressAlreadyInUse.set(true);
-
-                        InetAddress address = socket.getInetAddress();
-                        SocketAdapter socketAdapter = new SocketAdapter(address.getHostAddress(), socket.getPort());
-
-                        DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-
-                        // Check for connection Handler acceptage (TODO: Firewall Implementation)
-                        if(connectionHandler.handle(socketAdapter, inputStream)){
-                            socket.close();
-                            serverSocket.close();
-                            invalidPacketHandler.accept(socketAdapter);
-                            return;
-                        }
-
-                        int packetID = inputStream.read();
-                        PacketDataContainer dataContainer = new PacketDataContainer(packetID, socket, new CopyOnWriteArrayList<>());
-
-
-                        IPacket packet = byteHandler.handle(socketAdapter, dataContainer);
-
-                        if(packet == null){
-                            socket.close();
-                            serverSocket.close();
-                            invalidPacketHandler.accept(socketAdapter);
-                            return;
-                        }
-
-                        if (packetHandler != null) {
-                            // PACKET HANDLING
-                            packetHandler.handle(socketAdapter, packet);
-                        }
-
-                        addressAlreadyInUse.set(false);
-                        socket.close();
-                        serverSocket.close();
-                    } catch (Exception e) {
-                        addressAlreadyInUse.set(false);
                         try {
+                            if(serverSocket != null)
+                            serverSocket = new ServerSocket(localData.getPort());
+                            socket = serverSocket.accept();
+                            socket.setSoTimeout(500);
+                            addressAlreadyInUse.set(true);
+
+                            InetAddress address = socket.getInetAddress();
+                            SocketAdapter socketAdapter = new SocketAdapter(address.getHostAddress(), socket.getPort());
+
+                            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
+
+                            // Check for connection Handler acceptage (TODO: Firewall Implementation)
+                            if(!connectionHandler.handle(socketAdapter, inputStream)){
+                                socket.close();
+                                invalidPacketHandler.accept(socketAdapter);
+                                return;
+                            }
+
+                            int packetID = inputStream.read();
+                            PacketDataContainer dataContainer = new PacketDataContainer(packetID, socket, new CopyOnWriteArrayList<>());
+
+
+                            IPacket packet = byteHandler.handle(socketAdapter, dataContainer);
+
+                            if(packet == null){
+                                socket.close();
+                                invalidPacketHandler.accept(socketAdapter);
+                                return;
+                            }
+
+                            if (packetHandler != null) {
+                                // PACKET HANDLING
+                                packetHandler.handle(socketAdapter, packet);
+                            }
+
+                            addressAlreadyInUse.set(false);
                             socket.close();
-                            serverSocket.close();
-                        } catch (Exception ex) {System.out.println("[API] Error occured while trying to handle error!");}
-                        System.out.println("[API] Exeption occured while trying to resolve packets. (TYPE: " + e.getClass().getSimpleName() + " MSG:" + e.getMessage() + ")");
-                        e.printStackTrace();
+                        } catch (Exception e) {
+                            addressAlreadyInUse.set(false);
+                            try {
+                                socket.close();
+                            } catch (Exception ex) {System.out.println("[API] Error occured while trying to handle error!");}
+                            System.out.println("[API] Exeption occured while trying to resolve packets. (TYPE: " + e.getClass().getSimpleName() + " MSG:" + e.getMessage() + ")");
+                            e.printStackTrace();
+                        }
                     }
                 }
             }).start();

@@ -50,7 +50,7 @@ public class EndCryptionServer {
         connectionHandler.applyInvalidPacketNotifyConsumer(adapter ->
                 System.out.println(CMD_PREFIX + adapter.getIp() + ":" + adapter.getPort() + " -> was detected for sending an invalid packet (Not Encryption Packet)!"));
 
-        System.out.println(CMD_PREFIX + "The handlers were applyed.");
+        System.out.println(CMD_PREFIX + "The handlers were applied.");
 
         System.out.println(CMD_PREFIX + "Adding packets to packet registry...");
 
